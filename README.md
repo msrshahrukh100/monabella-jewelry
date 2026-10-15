@@ -39,6 +39,9 @@ Which features are free and which are Pro is set in the `STYLES` list (`pro` fla
 
 ## Hosting (free): GitHub Pages
 
+**Live (noindex) at https://msrshahrukh100.github.io/monabella-jewelry/ since 2026-10-15.** The repo is
+public for that. No subdomain for now (owner's choice); steps 3 and 4 below are for later.
+
 `.github/workflows/pages.yml` publishes `arabic-name-preview.html` as `index.html` on every push to `main`.
 No cost, no server.
 
