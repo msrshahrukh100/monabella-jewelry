@@ -1,0 +1,796 @@
+<meta charset="utf-8">
+<title>Arabic Name Necklace Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Reem+Kufi:wght@600&family=Amiri:wght@700&family=Gulzar&family=Ruwudu:wght@600&family=Qahiri&family=Lalezar&family=Rakkas&family=Mirza:wght@600&family=Katibeh&family=Alkalami&family=Vibes&family=Badeen+Display&family=Marhey:wght@600&family=El+Messiri:wght@600&family=Marcellus&family=Jost:wght@400;500;600&display=swap">
+<style>
+/* Layout: jeweller's counter. Velvet stage on the left (always dark, like a product photo), the order controls on the right, every calligraphy style laid out below as a tray. */
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --ink: #17140f;
+  --muted: #6d655a;
+  --line: #e6e0d5;
+  --gold: #9a7a2e;
+  --gold-soft: #f3ead6;
+  --focus: #b8923a;
+  --stage: #0b0a09;
+  --display: "Marcellus", "Cormorant Garamond", Georgia, serif;
+  --body: "Jost", "Helvetica Neue", Arial, sans-serif;
+  --arabic: "Amiri", "Geeza Pro", "Noto Naskh Arabic", serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11100e; --surface: #1a1815; --ink: #efe9df; --muted: #a59c8e;
+    --line: #2e2a24; --gold: #d6b56b; --gold-soft: #2a2418; --focus: #e2c27a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11100e; --surface: #1a1815; --ink: #efe9df; --muted: #a59c8e;
+  --line: #2e2a24; --gold: #d6b56b; --gold-soft: #2a2418; --focus: #e2c27a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.5; padding-inline: 16px; padding-block: 0 48px; }
+.wrap { max-width: 1180px; margin: 0 auto; }
+
+header.top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; padding-block: 22px 18px; border-bottom: 1px solid var(--line); }
+.brandline { font-family: var(--display); letter-spacing: .18em; text-transform: uppercase; font-size: 13px; }
+.brandline b { color: var(--gold); font-weight: 400; }
+.proto { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+
+.intro { padding-block: 28px 20px; max-width: 46rem; }
+.intro h1 { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.1; margin: 0 0 10px; text-wrap: balance; }
+.intro p { margin: 0; color: var(--muted); font-size: 16px; }
+
+.counter { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 860px) { .counter { grid-template-columns: minmax(0, 1fr); } }
+
+.stage-col { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); }
+@media (max-width: 860px) { .stage-col { position: static; } }
+.stage { position: relative; border-radius: 4px; overflow: hidden; background: var(--stage); aspect-ratio: 4 / 3; max-width: 100%; }
+.stage canvas { display: block; width: 100%; height: 100%; }
+.stage-cap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); margin-top: 10px; }
+.stage-cap .styleName { color: var(--ink); font-family: var(--display); letter-spacing: .06em; }
+.loading { position: absolute; inset: auto 12px 12px auto; font-size: 12px; color: #cdbf9f; letter-spacing: .08em; text-transform: uppercase; }
+
+.panel { display: grid; gap: 22px; min-width: 0; }
+.field { display: grid; gap: 8px; min-width: 0; }
+.label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.label span + span { letter-spacing: .02em; text-transform: none; font-variant-numeric: tabular-nums; }
+
+input[type="text"] { width: 100%; font: 500 20px var(--body); padding: 12px 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 3px; }
+input[type="text"]:focus-visible, button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+.spellings { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.spell { font: 400 22px var(--arabic); direction: rtl; padding: 4px 14px 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; cursor: pointer; }
+.spell[aria-pressed="true"] { border-color: var(--gold); background: var(--gold-soft); }
+.spell small { font: 11px var(--body); color: var(--muted); direction: ltr; margin-inline-start: 6px; }
+.note { font-size: 13px; color: var(--muted); margin: 0; }
+.note.warn { color: var(--gold); }
+
+.kbd-toggle { justify-self: start; background: none; border: 0; padding: 0; color: var(--gold); font: 500 13px var(--body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.kbd { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 4px; direction: rtl; }
+.kbd button { font: 20px var(--arabic); padding: 4px 0 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 3px; cursor: pointer; min-width: 0; }
+.kbd button.wide { grid-column: span 3; font: 500 12px var(--body); padding: 8px 0; }
+.kbd button:hover { border-color: var(--gold); }
+
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button { font: 500 14px var(--body); padding: 8px 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 3px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.seg button[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.swatch { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
+.sw-gold { background: linear-gradient(135deg, #f7e19a, #b48a2c); }
+.sw-silver { background: linear-gradient(135deg, #f4f5f7, #8e949c); }
+.sw-rose { background: linear-gradient(135deg, #f6cdbb, #b9735f); }
+
+.order { border-top: 1px solid var(--line); padding-top: 18px; display: grid; gap: 10px; }
+.order pre { margin: 0; font: 14px/1.6 var(--body); white-space: pre-wrap; background: var(--gold-soft); padding: 12px 14px; border-radius: 3px; overflow-x: auto; }
+.order pre .ar { font-family: var(--arabic); font-size: 17px; }
+.btn { justify-self: start; font: 600 14px var(--body); letter-spacing: .06em; padding: 12px 20px; border: 0; border-radius: 3px; background: var(--ink); color: var(--bg); cursor: pointer; }
+.copied { font-size: 13px; color: var(--gold); min-height: 1.4em; }
+
+.tray-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-top: 40px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.tray-head h2 { font-family: var(--display); font-weight: 400; font-size: 24px; margin: 0; }
+.tray-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.tray { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-top: 18px; }
+.tile { display: grid; gap: 8px; padding: 0; border: 0; background: none; text-align: start; cursor: pointer; color: var(--ink); min-width: 0; }
+.tile canvas { width: 100%; aspect-ratio: 16 / 9; display: block; border-radius: 3px; background: var(--stage); outline: 1px solid transparent; outline-offset: 3px; transition: outline-color .15s; }
+.tile:hover canvas { outline-color: var(--line); }
+.tile[aria-pressed="true"] canvas { outline: 2px solid var(--gold); }
+.tile .tn { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.tile .tn b { font-weight: 500; }
+.tile .tn span { color: var(--muted); }
+
+/* free / pro */
+.top-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.plan { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 3px 8px; border-radius: 999px; }
+.plan.on { color: var(--gold); border-color: var(--gold); }
+.pro-btn { font: 600 13px var(--body); letter-spacing: .06em; padding: 8px 14px; border-radius: 3px; border: 1px solid var(--gold); background: var(--gold); color: var(--bg); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.pro-btn.ghost { background: transparent; color: var(--gold); }
+.tag { font: 600 9px var(--body); letter-spacing: .14em; color: var(--gold); border: 1px solid currentColor; border-radius: 2px; padding: 1px 4px; vertical-align: middle; text-transform: uppercase; }
+.seg button.locked { color: var(--muted); border-style: dashed; }
+.seg button.locked .tag { margin-inline-start: 2px; }
+.tile.locked canvas { filter: saturate(.35) brightness(.7); }
+.tile .lock { position: absolute; top: 8px; inset-inline-end: 8px; }
+.tile .tcv { position: relative; }
+.tile .lock .tag { background: rgba(10,9,8,.75); color: #e2c27a; }
+.trial { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; padding: 8px 12px; margin-bottom: 10px; background: var(--gold-soft); border: 1px solid var(--gold); border-radius: 3px; }
+.trial button { background: none; border: 0; color: var(--gold); font: 600 13px var(--body); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; }
+
+.sheet-back { position: fixed; inset: 0; background: rgba(8,7,6,.55); display: grid; place-items: center; padding: 16px; z-index: 10; }
+.sheet { background: var(--surface); color: var(--ink); width: min(640px, 100%); max-height: calc(100% - 32px); overflow-y: auto; border-radius: 6px; border: 1px solid var(--line); padding: 26px 24px 22px; display: grid; gap: 18px; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+.sheet h2 { font-family: var(--display); font-weight: 400; font-size: 28px; margin: 0; text-wrap: balance; }
+.sheet .lede { margin: 0; color: var(--muted); }
+.sheet h3 { font: 600 12px var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--gold); margin: 0 0 8px; }
+.sheet ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.sheet li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: start; }
+.sheet li::before { content: "◆"; color: var(--gold); font-size: 11px; line-height: 22px; }
+.sheet li b { font-weight: 600; }
+.sheet li span { color: var(--muted); }
+.sheet li.hl { background: var(--gold-soft); margin-inline: -8px; padding: 6px 8px; border-radius: 3px; }
+.cmp { width: 100%; border-collapse: collapse; font-size: 14px; }
+.cmp th, .cmp td { text-align: start; padding: 7px 8px; border-bottom: 1px solid var(--line); }
+.cmp th { font-weight: 600; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.cmp td:not(:first-child), .cmp th:not(:first-child) { text-align: center; width: 104px; }
+.sheet:focus { outline: none; }
+.cmp .y { color: var(--gold); font-weight: 600; }
+.sheet-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.sheet .close { background: none; border: 0; color: var(--muted); font: 500 14px var(--body); cursor: pointer; padding: 8px 4px; }
+.sheet .contact { font-size: 14px; margin: 0; }
+
+footer { margin-top: 44px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); display: grid; gap: 6px; max-width: 60rem; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brandline">Arabic name necklace <b>preview</b></div>
+    <div class="top-right">
+      <span class="proto">Prototype for Mona Bella Jewelry · made by Shahrukh</span>
+      <span class="plan" id="planChip">Free version</span>
+      <button class="pro-btn" id="proBtn" type="button" aria-haspopup="dialog">✦ Pro features</button>
+    </div>
+  </header>
+
+  <section class="intro">
+    <h1>See the name in Arabic calligraphy before you order</h1>
+    <p>Type a name in English or Arabic, pick a calligraphy style and a finish. The pendant changes as you type.</p>
+  </section>
+
+  <section class="counter">
+    <div class="stage-col">
+      <div class="trial" id="trial" hidden>
+        <span>You are trying the Pro features in this preview.</span>
+        <button type="button" id="trialOff">Back to free version</button>
+      </div>
+      <div class="stage">
+        <canvas id="stage" width="1200" height="900" aria-label="Necklace preview"></canvas>
+        <div class="loading" id="loading">Loading styles…</div>
+      </div>
+      <div class="stage-cap">
+        <span class="styleName" id="capStyle">Diwani</span>
+        <span id="capMeta">Gold · 18 inch chain</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="field">
+        <label class="label" for="nameInput"><span>Name or word</span><span id="count">14 characters left</span></label>
+        <input id="nameInput" type="text" autocomplete="off" spellcheck="false" maxlength="24" value="Maryam">
+        <div class="spellings" id="spellings"></div>
+        <p class="note" id="spellNote"></p>
+        <button class="kbd-toggle" id="kbdToggle" type="button" aria-expanded="false">Type in Arabic letters instead</button>
+        <div class="kbd" id="kbd" hidden></div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Finish</span></div>
+        <div class="seg" id="finish">
+          <button type="button" data-v="gold" aria-pressed="true"><i class="swatch sw-gold"></i>Gold</button>
+          <button type="button" data-v="silver" aria-pressed="false"><i class="swatch sw-silver"></i>Silver</button>
+          <button type="button" data-v="rose" aria-pressed="false"><i class="swatch sw-rose"></i>Rose gold</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Pendant size</span></div>
+        <div class="seg" id="size">
+          <button type="button" data-v="0.78" aria-pressed="false">Small</button>
+          <button type="button" data-v="0.9" aria-pressed="true">Medium</button>
+          <button type="button" data-v="1" aria-pressed="false">Large</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Chain length</span></div>
+        <div class="seg" id="chain">
+          <button type="button" data-v="14" aria-pressed="false">14″</button>
+          <button type="button" data-v="16" aria-pressed="false">16″</button>
+          <button type="button" data-v="18" aria-pressed="true">18″</button>
+          <button type="button" data-v="20" aria-pressed="false">20″</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Charm</span></div>
+        <div class="seg" id="charm">
+          <button type="button" data-v="none" aria-pressed="true">None</button>
+          <button type="button" data-v="heart" data-pro="charms" aria-pressed="false">Heart</button>
+          <button type="button" data-v="crescent" data-pro="charms" aria-pressed="false">Crescent moon</button>
+          <button type="button" data-v="star" data-pro="charms" aria-pressed="false">Star</button>
+          <button type="button" data-v="turquoise" data-pro="charms" aria-pressed="false">Turquoise heart</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Chain style</span></div>
+        <div class="seg" id="chainStyle">
+          <button type="button" data-v="cable" aria-pressed="true">Classic chain</button>
+          <button type="button" data-v="pearl" data-pro="chains" aria-pressed="false">White pearls</button>
+          <button type="button" data-v="beads" data-pro="chains" aria-pressed="false">Gold beads</button>
+          <button type="button" data-v="turq" data-pro="chains" aria-pressed="false">Turquoise beads</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <div class="label"><span>Background</span></div>
+        <div class="seg" id="bg">
+          <button type="button" data-v="velvet" aria-pressed="true">Black velvet</button>
+          <button type="button" data-v="linen" data-pro="backgrounds" aria-pressed="false">Linen</button>
+        </div>
+      </div>
+
+      <div class="order">
+        <div class="label"><span>Your order details</span></div>
+        <pre id="orderText"></pre>
+        <button class="btn" id="copyBtn" type="button">Copy order details</button>
+        <div class="copied" id="copied" role="status"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="tray-head">
+    <h2>Every style, with this name</h2>
+    <p id="trayNote">5 styles in the free version. Tap a style to put it on the necklace.</p>
+  </div>
+  <div class="tray" id="tray"></div>
+
+  <div class="sheet-back" id="sheetBack" hidden>
+    <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" tabindex="-1">
+      <h2 id="sheetTitle">Pro features for Mona Bella</h2>
+      <p class="lede">The free version helps a customer see their name in Arabic calligraphy. Pro turns it into a full order tool on your store, built around the pieces you already sell.</p>
+
+      <div>
+        <h3>Try these now in this preview</h3>
+        <ul>
+          <li data-f="styles"><div><b>All 15 calligraphy styles.</b> <span>The free version has 5.</span></div></li>
+          <li data-f="charms"><div><b>Charms on the chain.</b> <span>Heart, crescent moon, star or a turquoise heart, like your teardrop and rosary pieces.</span></div></li>
+          <li data-f="chains"><div><b>Rosary style chains.</b> <span>White pearls, gold beads or turquoise beads on the chain.</span></div></li>
+          <li data-f="backgrounds"><div><b>More backgrounds.</b> <span>See silver and rose gold on a light linen background too.</span></div></li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>Built for your store with Pro</h3>
+        <ul>
+          <li><div><b>Add to cart with every detail attached.</b> <span>Name, Arabic spelling, style, finish and chain go straight into the order. No copy and paste, no missed details.</span></div></li>
+          <li><div><b>Smart spelling for any name.</b> <span>Not only common names. You still confirm the spelling before you make it.</span></div></li>
+          <li><div><b>Your calligrapher's own styles.</b> <span>Add the styles you actually make, so the preview looks like your work.</span></div></li>
+          <li><div><b>A picture of each preview saved with the order.</b> <span>You see exactly what the customer saw.</span></div></li>
+          <li><div><b>Names and styles your customers try most.</b> <span>Know what to feature in your posts and on your homepage.</span></div></li>
+        </ul>
+      </div>
+
+      <table class="cmp">
+        <thead><tr><th>Feature</th><th>Free</th><th>Pro</th></tr></thead>
+        <tbody>
+          <tr><td>Live name preview, English or Arabic</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Gold, silver, rose gold · sizes · chain lengths</td><td class="y">✓</td><td class="y">✓</td></tr>
+          <tr><td>Calligraphy styles</td><td>5</td><td class="y">15 + yours</td></tr>
+          <tr><td>Charms and rosary style chains</td><td>–</td><td class="y">✓</td></tr>
+          <tr><td>Order details</td><td>Copy and paste</td><td class="y">Added to cart</td></tr>
+          <tr><td>Smart spelling, saved previews, popular names</td><td>–</td><td class="y">✓</td></tr>
+        </tbody>
+      </table>
+
+      <div class="sheet-actions">
+        <button class="pro-btn" id="tryPro" type="button">Try Pro in this preview</button>
+        <button class="close" id="sheetClose" type="button">Close</button>
+      </div>
+      <p class="contact">Want Pro on your store? Reply to Shahrukh in your Instagram chat.</p>
+    </div>
+  </div>
+
+  <footer>
+    <span>This is a preview to help choose a style. Each real piece is hand drawn by the calligrapher, then laser cut, so the final shape will differ a little. Dots and small marks are joined to the letters in the real piece.</span>
+    <span>Prototype made for Mona Bella Jewelry by Shahrukh. Not connected to the store yet.</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const STYLES = [
+    { id: "ruwudu",   family: "Ruwudu",        weight: 600, name: "Diwani",         note: "Flowing court script" },
+    { id: "ruqaa",    family: "Aref Ruqaa",    weight: 700, name: "Ruqʿah",          note: "Everyday handwriting" },
+    { id: "gulzar",   family: "Gulzar",        weight: 400, name: "Nastaʿlīq",       note: "Sloped Persian style" },
+    { id: "amiri",    family: "Amiri",         weight: 700, name: "Naskh",           note: "Classic book script" },
+    { id: "reemkufi", family: "Reem Kufi",     weight: 600, name: "Kufi",            note: "Clean and modern" },
+    { id: "qahiri",   family: "Qahiri",        weight: 400, name: "Fatimid Kufi",    note: "Old Cairo geometry" },
+    { id: "messiri",  family: "El Messiri",    weight: 600, name: "Modern Naskh",    note: "Soft and simple" },
+    { id: "mirza",    family: "Mirza",         weight: 600, name: "Classic",         note: "Elegant contrast" },
+    { id: "rakkas",   family: "Rakkas",        weight: 400, name: "Bold Display",    note: "Big statement piece" },
+    { id: "lalezar",  family: "Lalezar",       weight: 400, name: "Heavy",           note: "Thick, strong letters" },
+    { id: "katibeh",  family: "Katibeh",       weight: 400, name: "Brush",           note: "Hand painted feel" },
+    { id: "alkalami", family: "Alkalami",      weight: 400, name: "Sahel",           note: "West African pen" },
+    { id: "vibes",    family: "Vibes",         weight: 400, name: "Handwritten",     note: "Light and playful" },
+    { id: "marhey",   family: "Marhey",        weight: 600, name: "Rounded",         note: "Friendly, for kids" },
+    { id: "badeen",   family: "Badeen Display",weight: 400, name: "Ornamental",      note: "Decorative edges" },
+  ];
+  // The free version gets the first five styles; the rest are Pro.
+  STYLES.forEach((s, i) => { s.pro = i >= 5; });
+
+  // Common names and words, English spelling -> Arabic spellings (first one is the default).
+  const NAMES = {
+    "aisha|ayesha|aysha|aishah": ["عائشة"], "amal": ["أمل"], "amina|aminah|ameena": ["آمنة", "أمينة"], "amira|ameera": ["أميرة"],
+    "asma|asmaa": ["أسماء"], "aya|ayah": ["آية"], "dalia": ["داليا"], "dana": ["دانة", "دانا"], "fatima|fatimah|fatma": ["فاطمة"],
+    "farah": ["فرح"], "hana|hanaa": ["هناء", "هنا"], "hannah": ["حنة", "هانا"], "hiba|heba": ["هبة"], "huda|houda": ["هدى"], "iman|eman|imaan": ["إيمان"],
+    "jana": ["جنى"], "jannah|jannat": ["جنة"], "khadija|khadijah": ["خديجة"], "lana": ["لانا"], "lara": ["لارا"],
+    "layla|leila|laila|leyla|lailah": ["ليلى"], "lina|leena": ["لينا"], "malak": ["ملاك"], "mariam|maryam|mariyam|miriam|maryum": ["مريم"],
+    "maya": ["مايا"], "mona|muna": ["منى"], "nadia|nadya": ["نادية"], "nour|noor|nur": ["نور"], "noura|nora": ["نورة"], "rania": ["رانيا"],
+    "reem|rim": ["ريم"], "rana": ["رنا"], "ruqayya|ruqaya|ruqayyah": ["رقية"], "salma": ["سلمى"], "sara|sarah": ["سارة", "سارا"],
+    "sana|sanaa": ["سناء"], "sofia|sophia": ["صوفيا"], "yasmin|yasmeen|jasmine|yasmine": ["ياسمين"], "zainab|zaynab|zeinab": ["زينب"],
+    "zahra|zehra": ["زهراء", "زهرة"], "zara": ["زارا"], "hajar|hagar": ["هاجر"], "hafsa|hafsah": ["حفصة"], "samira|sameera": ["سميرة"],
+    "sumaya|sumayyah|sumaiya": ["سمية"], "rahma|rahmah": ["رحمة"], "safa|safaa": ["صفاء"], "marwa|marwah": ["مروة"], "dina|deena": ["دينا"],
+    "rasha": ["رشا"], "ghada": ["غادة"], "uzma": ["عظمى"], "bella": ["بيلا"], "emma": ["إيما"], "olivia": ["أوليفيا"], "mia": ["ميا"],
+    "ava": ["إيفا"], "noah|nuh": ["نوح"], "adam": ["آدم"], "ali": ["علي"], "ahmad|ahmed": ["أحمد"],
+    "muhammad|mohammed|mohamed|mohammad|muhammed|mohamad": ["محمد"], "omar|umar": ["عمر"], "yusuf|yousef|youssef|yousuf|joseph": ["يوسف"],
+    "ibrahim|abraham": ["إبراهيم"], "ismail|ismael": ["إسماعيل"], "hamza|hamzah": ["حمزة"], "hassan|hasan": ["حسن"],
+    "hussein|husain|hussain|husayn": ["حسين"], "khalid|khaled": ["خالد"], "karim|kareem": ["كريم"], "mustafa|mostafa": ["مصطفى"],
+    "mahmoud|mahmood|mahmud": ["محمود"], "bilal": ["بلال"], "zaid|zayd|zayed": ["زيد"], "tariq|tarek|tareq": ["طارق"], "amir|ameer": ["أمير"],
+    "ayman": ["أيمن"], "faisal|faysal": ["فيصل"], "fares|faris": ["فارس"], "ilyas|elias": ["إلياس"], "issa|isa|eesa": ["عيسى"],
+    "musa|moussa|moses": ["موسى"], "idris": ["إدريس"], "jamal": ["جمال"], "nabil": ["نبيل"], "rami": ["رامي"], "sami": ["سامي"],
+    "salim|saleem|selim": ["سليم"], "samir|sameer": ["سمير"], "walid|waleed": ["وليد"], "yahya": ["يحيى"], "yasin|yaseen|yassin": ["ياسين"],
+    "zakaria|zakariya|zakariyya": ["زكريا"], "sulaiman|suleiman|sulayman|solomon": ["سليمان"], "dawud|dawood|david": ["داود"],
+    "abdullah|abdallah": ["عبدالله"], "abdulrahman|abdelrahman|abdurrahman": ["عبدالرحمن"], "rayan|ryan": ["ريان"], "adnan": ["عدنان"],
+    "anas": ["أنس"], "osama|usama": ["أسامة"], "mashallah|mashaallah|masha allah": ["ما شاء الله"], "bismillah": ["بسم الله"],
+    "alhamdulillah|alhamdulilah": ["الحمد لله"], "sabr": ["صبر"], "shukr": ["شكر"], "habibi": ["حبيبي"], "habibti": ["حبيبتي"],
+    "mama": ["ماما"], "baba": ["بابا"], "allah": ["الله"], "hope": ["أمل"], "love": ["حب"], "salam|peace": ["سلام"], "palestine|falastin|filastin": ["فلسطين"],
+  };
+  const DICT = {};
+  for (const [keys, vals] of Object.entries(NAMES)) for (const k of keys.split("|")) DICT[k] = vals;
+
+  // Very rough sound-based spelling, only used when the name is not in the list.
+  function roughArabic(word) {
+    const w = word.toLowerCase().replace(/[^a-z]/g, "").replace(/(.)\1+/g, "$1");
+    if (!w) return "";
+    const di = { sh: "ش", kh: "خ", gh: "غ", th: "ث", dh: "ذ", ch: "تش", ph: "ف", ee: "ي", ii: "ي", oo: "و", ou: "و", uu: "و", aa: "ا", ai: "ي", ay: "ي", ei: "ي", ey: "ي" };
+    const one = { b: "ب", t: "ت", j: "ج", h: "ه", d: "د", r: "ر", z: "ز", s: "س", f: "ف", q: "ق", k: "ك", l: "ل", m: "م", n: "ن", p: "ب", v: "ف", g: "ج", c: "ك", x: "كس", y: "ي", w: "و" };
+    let out = "", i = 0;
+    while (i < w.length) {
+      const two = w.slice(i, i + 2), ch = w[i], first = i === 0, last = i === w.length - 1;
+      if (di[two]) { out += (first && "aeiou".includes(two[0])) ? "ا" + di[two] : di[two]; i += 2; continue; }
+      if ("aeiou".includes(ch)) {
+        if (first) out += ch === "i" || ch === "e" ? "إ" : ch === "o" || ch === "u" ? "أو" : "أ";
+        else if (ch === "a") out += last ? "ا" : "ا";
+        else if (ch === "e" || ch === "i") out += last ? "ي" : "ي";
+        else out += "و";
+        i++; continue;
+      }
+      out += one[ch] || ""; i++;
+    }
+    return out;
+  }
+
+  const ARABIC = /[؀-ۿ]/;
+  const MAX = 14;
+  const state = { input: "Maryam", arabic: "مريم", spellings: ["مريم"], source: "list", style: "ruwudu", finish: "gold", size: 0.9, chain: "18", bg: "velvet", charm: "none", chainStyle: "cable", pro: false };
+  try { const saved = JSON.parse(localStorage.getItem("mb-preview") || "null"); if (saved && typeof saved === "object") Object.assign(state, saved); } catch (e) {}
+  const save = () => { try { localStorage.setItem("mb-preview", JSON.stringify(state)); } catch (e) {} };
+
+  const $ = (id) => document.getElementById(id);
+  const input = $("nameInput");
+  input.value = state.input;
+
+  // ---------- metal rendering ----------
+  const METALS = {
+    gold:   { stops: ["#7a5a17", "#e9c766", "#fff0b0", "#c79a35", "#8d6a1f", "#f2d27a", "#a47b26"], edge: "rgba(70,45,5,.55)",  ring: "#d9b553", hi: "rgba(255,248,215,.55)" },
+    silver: { stops: ["#6b7077", "#d9dde2", "#ffffff", "#aeb4bb", "#7d838b", "#eef0f3", "#959ba3"], edge: "rgba(40,44,50,.5)",  ring: "#c8ccd2", hi: "rgba(255,255,255,.6)" },
+    rose:   { stops: ["#7e4a3b", "#e7ad95", "#ffe0d2", "#c8826c", "#93594a", "#f3c3ae", "#a96a58"], edge: "rgba(80,35,25,.5)",  ring: "#dda08a", hi: "rgba(255,236,226,.55)" },
+  };
+  function metalGradient(ctx, y0, y1, finish) {
+    const g = ctx.createLinearGradient(0, y0, 0, y1);
+    const s = METALS[finish].stops;
+    s.forEach((c, i) => g.addColorStop(i / (s.length - 1), c));
+    return g;
+  }
+  const fontOf = (st, px) => `${st.weight} ${px}px "${st.family}"`;
+
+  // Draw the name as a metal pendant on its own canvas. Returns the canvas and where the chain should attach.
+  function renderPendant(text, st, px, finish) {
+    const m = document.createElement("canvas").getContext("2d");
+    m.font = fontOf(st, px); m.direction = "rtl"; m.textAlign = "left";
+    const mt = m.measureText(text);
+    const left = mt.actualBoundingBoxLeft, right = mt.actualBoundingBoxRight;
+    const asc = mt.actualBoundingBoxAscent, desc = mt.actualBoundingBoxDescent;
+    const pad = Math.ceil(px * 0.14);
+    const w = Math.max(2, Math.ceil(left + right + pad * 2)), h = Math.max(2, Math.ceil(asc + desc + pad * 2));
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    const ctx = c.getContext("2d");
+    ctx.font = fontOf(st, px); ctx.direction = "rtl"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    // textAlign "left" with rtl: x is the left alignment point; offset by the measured left extent.
+    const x = pad + left, y = pad + asc;
+    // darker rim under the letters gives the cut metal some thickness
+    const rim = Math.max(1, px / 70);
+    ctx.fillStyle = METALS[finish].edge; ctx.fillText(text, x, y + rim);
+    ctx.fillStyle = metalGradient(ctx, pad, h - pad, finish);
+    ctx.fillText(text, x, y);
+    // diagonal sheen, kept inside the letters
+    ctx.globalCompositeOperation = "source-atop";
+    const sh = ctx.createLinearGradient(0, 0, w, h);
+    sh.addColorStop(0, "rgba(255,255,255,0)"); sh.addColorStop(0.42, "rgba(255,255,255,0)");
+    sh.addColorStop(0.5, METALS[finish].hi); sh.addColorStop(0.58, "rgba(255,255,255,0)"); sh.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = sh; ctx.fillRect(0, 0, w, h);
+    ctx.globalCompositeOperation = "source-over";
+
+    // attach points: outermost metal in the part of the word above the baseline
+    let attach = null;
+    try {
+      const data = ctx.getImageData(0, 0, w, h).data;
+      const yTop = Math.max(0, Math.floor(pad + asc * 0.05)), yBot = Math.min(h - 1, Math.floor(y));
+      const solid = (xx, yy) => data[(yy * w + xx) * 4 + 3] > 140;
+      const findSide = (fromLeft) => {
+        for (let k = 0; k < w; k++) {
+          const xx = fromLeft ? k : w - 1 - k;
+          const ys = [];
+          for (let yy = yTop; yy <= yBot; yy++) if (solid(xx, yy)) ys.push(yy);
+          if (ys.length) {
+            // gather a few more columns for a stable centre
+            const all = [];
+            for (let j = 0; j < 6; j++) { const x2 = fromLeft ? xx + j : xx - j; if (x2 < 0 || x2 >= w) break; for (let yy = yTop; yy <= yBot; yy++) if (solid(x2, yy)) all.push(yy); }
+            const top = Math.min(...all);
+            return { x: xx + (fromLeft ? 2 : -2), y: top + Math.min(px * 0.06, (Math.max(...all) - top) / 2) };
+          }
+        }
+        return null;
+      };
+      const L = findSide(true), R = findSide(false);
+      if (L && R) attach = { L, R };
+    } catch (e) {}
+    if (!attach) attach = { L: { x: pad, y: y - asc * 0.5 }, R: { x: w - pad, y: y - asc * 0.5 } };
+    return { canvas: c, attach, w, h };
+  }
+
+  // ---------- background ----------
+  const bgCache = {};
+  function background(kind, W, H) {
+    const key = kind + W + "x" + H;
+    if (bgCache[key]) return bgCache[key];
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const ctx = c.getContext("2d");
+    const g = ctx.createRadialGradient(W * 0.5, H * 0.55, H * 0.05, W * 0.5, H * 0.55, W * 0.75);
+    if (kind === "linen") { g.addColorStop(0, "#f4efe6"); g.addColorStop(1, "#cfc5b4"); }
+    else { g.addColorStop(0, "#2b2622"); g.addColorStop(0.55, "#120f0d"); g.addColorStop(1, "#030303"); }
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const img = ctx.getImageData(0, 0, W, H), d = img.data;
+    const amt = kind === "linen" ? 10 : 7;
+    for (let i = 0; i < d.length; i += 4) { const n = (Math.random() - 0.5) * amt; d[i] += n; d[i + 1] += n; d[i + 2] += n; }
+    ctx.putImageData(img, 0, 0);
+    if (kind === "linen") { // faint weave
+      ctx.globalAlpha = 0.05; ctx.strokeStyle = "#6b5d47";
+      for (let yy = 0; yy < H; yy += 4) { ctx.beginPath(); ctx.moveTo(0, yy); ctx.lineTo(W, yy); ctx.stroke(); }
+      ctx.globalAlpha = 1;
+    }
+    return (bgCache[key] = c);
+  }
+
+  // ---------- chain ----------
+  const BEADS = {
+    pearl: ["#ffffff", "#efe9df", "#b9b0a2"],
+    turq:  ["#c8fbf6", "#3cc2bd", "#11706f"],
+  };
+  function drawBead(ctx, x, y, r, kind, finish) {
+    const g = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.1, x, y, r);
+    const c = kind === "beads" ? [METALS[finish].stops[2], METALS[finish].stops[1], METALS[finish].stops[0]] : BEADS[kind];
+    g.addColorStop(0, c[0]); g.addColorStop(0.55, c[1]); g.addColorStop(1, c[2]);
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+  }
+  function drawChain(ctx, from, to, sag, finish, link, beads = "cable") {
+    const cp = { x: (from.x + to.x) / 2 + sag, y: (from.y + to.y) / 2 };
+    const pt = (t) => ({ x: (1 - t) ** 2 * from.x + 2 * (1 - t) * t * cp.x + t * t * to.x, y: (1 - t) ** 2 * from.y + 2 * (1 - t) * t * cp.y + t * t * to.y });
+    // walk the curve at equal steps
+    const pts = [pt(0)]; let acc = 0, prev = pts[0];
+    for (let i = 1; i <= 600; i++) { const p = pt(i / 600); acc += Math.hypot(p.x - prev.x, p.y - prev.y); if (acc >= link * 0.82) { pts.push(p); acc = 0; } prev = p; }
+    const M = METALS[finish];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const a = pts[i], b = pts[i + 1];
+      const cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2, ang = Math.atan2(b.y - a.y, b.x - a.x);
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(ang);
+      if (i % 2 === 0) {
+        ctx.beginPath(); ctx.ellipse(0, 0, link * 0.56, link * 0.32, 0, 0, Math.PI * 2);
+        ctx.lineWidth = link * 0.16; ctx.strokeStyle = M.ring; ctx.stroke();
+        ctx.beginPath(); ctx.ellipse(0, -link * 0.04, link * 0.5, link * 0.26, 0, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.lineWidth = link * 0.06; ctx.strokeStyle = M.hi; ctx.stroke();
+      } else {
+        ctx.beginPath(); ctx.ellipse(0, 0, link * 0.58, link * 0.11, 0, 0, Math.PI * 2);
+        ctx.fillStyle = M.ring; ctx.fill();
+        ctx.lineWidth = link * 0.04; ctx.strokeStyle = M.edge; ctx.stroke();
+      }
+      ctx.restore();
+    }
+    // rosary style: a bead every few links, kept clear of the pendant end
+    if (beads !== "cable") {
+      for (let i = 3; i < pts.length - 3; i += 4) drawBead(ctx, pts[i].x, pts[i].y, link * 0.62, beads, finish);
+    }
+    return pts;
+  }
+
+  // Charm hanging from the chain (heart, crescent, star, turquoise heart).
+  function drawCharm(ctx, at, kind, finish, s) {
+    const M = METALS[finish];
+    ctx.save();
+    ctx.beginPath(); ctx.arc(at.x, at.y + s * 0.12, s * 0.12, 0, Math.PI * 2);
+    ctx.lineWidth = s * 0.05; ctx.strokeStyle = M.ring; ctx.stroke();
+    ctx.translate(at.x, at.y + s * 0.62);
+    const p = new Path2D();
+    if (kind === "heart" || kind === "turquoise") {
+      p.moveTo(0, s * 0.42);
+      p.bezierCurveTo(-s * 0.62, s * 0.02, -s * 0.36, -s * 0.46, 0, -s * 0.16);
+      p.bezierCurveTo(s * 0.36, -s * 0.46, s * 0.62, s * 0.02, 0, s * 0.42);
+    } else if (kind === "star") {
+      for (let i = 0; i < 10; i++) { const r = i % 2 ? s * 0.2 : s * 0.46, a = -Math.PI / 2 + i * Math.PI / 5; i ? p.lineTo(Math.cos(a) * r, Math.sin(a) * r) : p.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
+      p.closePath();
+    } else if (kind === "crescent") {
+      p.arc(0, 0, s * 0.42, Math.PI * 0.2, Math.PI * 1.8, false);
+      p.arc(s * 0.16, -s * 0.04, s * 0.34, Math.PI * 1.72, Math.PI * 0.28, true);
+      p.closePath();
+    }
+    let fill;
+    if (kind === "turquoise") { fill = ctx.createLinearGradient(0, -s * 0.4, 0, s * 0.4); fill.addColorStop(0, BEADS.turq[0]); fill.addColorStop(0.5, BEADS.turq[1]); fill.addColorStop(1, BEADS.turq[2]); }
+    else fill = metalGradient(ctx, -s * 0.45, s * 0.45, finish);
+    ctx.fillStyle = fill; ctx.fill(p);
+    ctx.lineWidth = Math.max(1, s * 0.04); ctx.strokeStyle = kind === "turquoise" ? M.ring : M.edge; ctx.stroke(p);
+    ctx.restore();
+  }
+
+  // ---------- main stage ----------
+  const stage = $("stage"), sctx = stage.getContext("2d");
+  const W = stage.width, H = stage.height;
+  const styleById = (id) => STYLES.find((s) => s.id === id) || STYLES[0];
+
+  function fitPx(text, st, maxW, maxH, start) {
+    const m = document.createElement("canvas").getContext("2d");
+    let px = start;
+    for (let i = 0; i < 30; i++) {
+      m.font = fontOf(st, px); m.direction = "rtl";
+      const t = m.measureText(text);
+      const tw = t.actualBoundingBoxLeft + t.actualBoundingBoxRight, th = t.actualBoundingBoxAscent + t.actualBoundingBoxDescent;
+      if (tw <= maxW && th <= maxH) break;
+      px *= Math.min(maxW / Math.max(tw, 1), maxH / Math.max(th, 1), 0.97);
+    }
+    return px;
+  }
+
+  function drawStage() {
+    const st = styleById(state.style);
+    sctx.drawImage(background(state.bg, W, H), 0, 0);
+    const text = state.arabic || "";
+    if (!text) {
+      sctx.fillStyle = state.bg === "linen" ? "#6b5d47" : "#8f8371";
+      sctx.font = `400 34px ${getComputedStyle(document.body).getPropertyValue("--display") || "serif"}`;
+      sctx.textAlign = "center"; sctx.fillText("Type a name to see it here", W / 2, H / 2);
+      return;
+    }
+    const px = fitPx(text, st, W * 0.66 * state.size, H * 0.42 * state.size, 260 * state.size);
+    const p = renderPendant(text, st, px, state.finish);
+    const ox = Math.round(W / 2 - p.w / 2), oy = Math.round(H * 0.6 - p.h / 2);
+    const L = { x: ox + p.attach.L.x, y: oy + p.attach.L.y }, R = { x: ox + p.attach.R.x, y: oy + p.attach.R.y };
+    const link = 15;
+    const shadow = state.bg === "linen" ? "rgba(60,40,10,.35)" : "rgba(0,0,0,.75)";
+    // chains come down from the neck, slightly outside the pendant ends
+    sctx.save();
+    sctx.shadowColor = shadow; sctx.shadowBlur = 6; sctx.shadowOffsetY = 4;
+    const spread = Math.max(W * 0.05, (R.x - L.x) * 0.08);
+    drawChain(sctx, { x: L.x - spread, y: -20 }, { x: L.x - link * 0.5, y: L.y }, -W * 0.02, state.finish, link, state.chainStyle);
+    const rightPts = drawChain(sctx, { x: R.x + spread, y: -20 }, { x: R.x + link * 0.5, y: R.y }, W * 0.02, state.finish, link, state.chainStyle);
+    if (state.charm !== "none" && rightPts.length > 6) {
+      sctx.shadowBlur = 10; sctx.shadowOffsetY = 6;
+      drawCharm(sctx, rightPts[Math.floor(rightPts.length * 0.62)], state.charm, state.finish, link * 3.2);
+    }
+    sctx.restore();
+    // pendant
+    sctx.save();
+    sctx.shadowColor = shadow; sctx.shadowBlur = 18; sctx.shadowOffsetY = 10;
+    sctx.drawImage(p.canvas, ox, oy);
+    sctx.restore();
+    // jump rings
+    const M = METALS[state.finish];
+    for (const a of [L, R]) {
+      sctx.beginPath(); sctx.arc(a.x + (a === L ? -link * 0.3 : link * 0.3), a.y, link * 0.42, 0, Math.PI * 2);
+      sctx.lineWidth = link * 0.17; sctx.strokeStyle = M.ring; sctx.stroke();
+      sctx.lineWidth = link * 0.05; sctx.strokeStyle = M.edge; sctx.stroke();
+    }
+  }
+
+  // ---------- style tray ----------
+  const tray = $("tray");
+  const tiles = STYLES.map((st) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "tile"; b.dataset.id = st.id;
+    b.innerHTML = `<div class="tcv"><canvas width="480" height="270" aria-hidden="true"></canvas>${st.pro ? '<span class="lock" hidden><span class="tag">Pro</span></span>' : ""}</div><div class="tn"><b>${st.name}</b><span>${st.note}</span></div>`;
+    b.setAttribute("aria-label", `${st.name} style${st.pro ? " (Pro)" : ""}`);
+    b.addEventListener("click", () => { if (st.pro && !state.pro) { openPro("styles"); return; } state.style = st.id; update(false); $("stage").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" }); });
+    tray.appendChild(b);
+    return { st, b, c: b.querySelector("canvas") };
+  });
+  function drawTiles() {
+    const text = state.arabic;
+    for (const t of tiles) {
+      t.b.setAttribute("aria-pressed", String(t.st.id === state.style));
+      const locked = t.st.pro && !state.pro;
+      t.b.classList.toggle("locked", locked);
+      const lock = t.b.querySelector(".lock"); if (lock) lock.hidden = !locked;
+      const ctx = t.c.getContext("2d"), w = t.c.width, h = t.c.height;
+      ctx.drawImage(background(state.bg, w, h), 0, 0);
+      if (!text) continue;
+      const px = fitPx(text, t.st, w * 0.8, h * 0.58, 120);
+      const p = renderPendant(text, t.st, px, state.finish);
+      ctx.save(); ctx.shadowColor = state.bg === "linen" ? "rgba(60,40,10,.3)" : "rgba(0,0,0,.7)"; ctx.shadowBlur = 8; ctx.shadowOffsetY = 4;
+      ctx.drawImage(p.canvas, Math.round(w / 2 - p.w / 2), Math.round(h / 2 - p.h / 2));
+      ctx.restore();
+    }
+  }
+
+  // ---------- spelling ----------
+  function resolveSpelling() {
+    const raw = input.value.trim();
+    state.input = input.value;
+    const note = $("spellNote"); note.className = "note";
+    if (!raw) { state.spellings = []; state.arabic = ""; state.source = "none"; note.textContent = ""; return; }
+    if (ARABIC.test(raw)) {
+      state.spellings = []; state.arabic = raw.replace(/[^؀-ۿ\s]/g, "").replace(/\s+/g, " ").slice(0, MAX); state.source = "arabic";
+      note.textContent = "Arabic letters, shown exactly as typed.";
+      return;
+    }
+    const key = raw.toLowerCase().replace(/\s+/g, " ");
+    const words = key.split(" ");
+    const known = DICT[key] || (words.every((w) => DICT[w]) ? [words.map((w) => DICT[w][0]).join(" ")] : null);
+    if (known) {
+      if (!known.includes(state.arabic)) state.arabic = known[0];
+      state.spellings = known; state.source = "list";
+      note.textContent = known.length > 1 ? "Common spellings. Tap the one you want." : "Common spelling. You can also type it in Arabic letters.";
+    } else {
+      const guess = words.map((w) => DICT[w] ? DICT[w][0] : roughArabic(w)).join(" ");
+      state.spellings = [guess]; state.arabic = guess; state.source = "guess";
+      note.className = "note warn";
+      note.textContent = "Rough guess from the sound. The calligrapher will confirm the right spelling with you by email before making it.";
+    }
+    state.arabic = state.arabic.slice(0, MAX);
+  }
+  function drawSpellings() {
+    const box = $("spellings"); box.innerHTML = "";
+    for (const s of state.spellings) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "spell"; b.setAttribute("aria-pressed", String(s === state.arabic));
+      b.textContent = s;
+      if (state.source === "guess") { const sm = document.createElement("small"); sm.textContent = "guess"; b.appendChild(sm); }
+      b.addEventListener("click", () => { state.arabic = s; update(false); });
+      box.appendChild(b);
+    }
+    const left = MAX - [...(state.arabic || "")].length;
+    $("count").textContent = `${Math.max(0, left)} characters left`;
+  }
+
+  // ---------- keyboard ----------
+  const LETTERS = "ا أ إ آ ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي ى ة ء ئ ؤ".split(" ");
+  const kbd = $("kbd");
+  for (const l of LETTERS) { const b = document.createElement("button"); b.type = "button"; b.textContent = l; b.setAttribute("aria-label", `Letter ${l}`); b.addEventListener("click", () => typeArabic(l)); kbd.appendChild(b); }
+  const space = document.createElement("button"); space.type = "button"; space.className = "wide"; space.textContent = "Space"; space.addEventListener("click", () => typeArabic(" ")); kbd.appendChild(space);
+  const back = document.createElement("button"); back.type = "button"; back.className = "wide"; back.textContent = "Delete"; back.addEventListener("click", () => { const v = ARABIC.test(input.value) ? [...input.value] : []; v.pop(); input.value = v.join(""); update(); }); kbd.appendChild(back);
+  const clear = document.createElement("button"); clear.type = "button"; clear.className = "wide"; clear.textContent = "Clear"; clear.addEventListener("click", () => { input.value = ""; update(); }); kbd.appendChild(clear);
+  function typeArabic(ch) { const base = ARABIC.test(input.value) ? input.value : ""; if ([...base].length >= MAX) return; input.value = base + ch; update(); }
+  $("kbdToggle").addEventListener("click", (e) => { const open = kbd.hidden; kbd.hidden = !open; e.currentTarget.setAttribute("aria-expanded", String(open)); e.currentTarget.textContent = open ? "Hide Arabic letters" : "Type in Arabic letters instead"; });
+
+  // ---------- option groups ----------
+  const FINISH_NAMES = { gold: "18k gold plated", silver: "Silver", rose: "Rose gold" };
+  const CHAIN_NAMES = { pearl: "white pearls", beads: "gold beads", turq: "turquoise beads" };
+  const CHARM_NAMES = { heart: "Heart", crescent: "Crescent moon", star: "Star", turquoise: "Turquoise heart" };
+  function bindSeg(id, key, cast = (v) => v) {
+    const g = $(id);
+    g.addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.pro && !state.pro) { openPro(b.dataset.pro); return; }
+      state[key] = cast(b.dataset.v); update(false);
+    });
+    // add a small Pro tag to locked options once
+    g.querySelectorAll("button[data-pro]").forEach((b) => { const t = document.createElement("span"); t.className = "tag"; t.textContent = "Pro"; b.appendChild(t); });
+    return () => g.querySelectorAll("button").forEach((b) => {
+      b.setAttribute("aria-pressed", String(String(cast(b.dataset.v)) === String(state[key])));
+      const locked = !!b.dataset.pro && !state.pro;
+      b.classList.toggle("locked", locked);
+      const tag = b.querySelector(".tag"); if (tag) tag.hidden = !locked;
+    });
+  }
+  const syncs = [bindSeg("finish", "finish"), bindSeg("size", "size", Number), bindSeg("chain", "chain"), bindSeg("bg", "bg"), bindSeg("charm", "charm"), bindSeg("chainStyle", "chainStyle")];
+
+  // ---------- free / pro ----------
+  const PRO_DEFAULTS = { charm: "none", chainStyle: "cable", bg: "velvet" };
+  function enforcePlan() {
+    if (state.pro) return;
+    if (styleById(state.style).pro) state.style = STYLES[0].id;
+    Object.assign(state, PRO_DEFAULTS);
+  }
+  const sheetBack = $("sheetBack");
+  let lastFocus = null;
+  function openPro(feature) {
+    lastFocus = document.activeElement;
+    sheetBack.querySelectorAll("li[data-f]").forEach((li) => li.classList.toggle("hl", li.dataset.f === feature));
+    $("tryPro").textContent = state.pro ? "Back to free version" : "Try Pro in this preview";
+    sheetBack.hidden = false;
+    $("sheet").scrollTop = 0;
+    $("sheet").focus({ preventScroll: true });
+  }
+  function closePro() { sheetBack.hidden = true; if (lastFocus) lastFocus.focus(); }
+  function setPro(on) { state.pro = on; enforcePlan(); update(false); }
+  $("proBtn").addEventListener("click", () => openPro(null));
+  $("sheetClose").addEventListener("click", closePro);
+  sheetBack.addEventListener("click", (e) => { if (e.target === sheetBack) closePro(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !sheetBack.hidden) closePro(); });
+  $("tryPro").addEventListener("click", () => { setPro(!state.pro); closePro(); });
+  $("trialOff").addEventListener("click", () => setPro(false));
+
+  function orderText() {
+    const st = styleById(state.style);
+    const sizeName = { 0.78: "Small", 0.9: "Medium", 1: "Large" }[state.size] || "Medium";
+    const lines = [
+      `Name: ${state.input.trim() && !ARABIC.test(state.input) ? state.input.trim() + " → " : ""}<span class="ar">${esc(state.arabic || "-")}</span>`,
+      `Calligraphy style: ${st.name} (${st.family})`,
+      `Finish: ${FINISH_NAMES[state.finish]}`,
+      `Pendant size: ${sizeName}`,
+      `Chain: ${state.chain} inches${state.chainStyle !== "cable" ? ", " + CHAIN_NAMES[state.chainStyle] : ""}`,
+    ];
+    if (state.charm !== "none") lines.push(`Charm: ${CHARM_NAMES[state.charm]}`);
+    if (state.source === "guess") lines.push("Spelling: please confirm with me");
+    return lines;
+  }
+  const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  $("copyBtn").addEventListener("click", () => {
+    const plain = orderText().map((l) => l.replace(/<[^>]+>/g, "")).join("\n").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"');
+    const done = (msg) => { $("copied").textContent = msg; setTimeout(() => ($("copied").textContent = ""), 4000); };
+    const fallback = () => { const r = document.createRange(); r.selectNodeContents($("orderText")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); done("Selected. Press Ctrl+C or Cmd+C to copy."); };
+    try { navigator.clipboard.writeText(plain).then(() => done("Copied. Paste it into “Add custom details” on the product page."), fallback); } catch (e) { fallback(); }
+  });
+
+  // ---------- update loop ----------
+  let pending = 0;
+  function update(respell = true) {
+    if (respell) resolveSpelling();
+    enforcePlan();
+    $("planChip").textContent = state.pro ? "Pro preview" : "Free version";
+    $("planChip").classList.toggle("on", state.pro);
+    $("proBtn").classList.toggle("ghost", state.pro);
+    $("trial").hidden = !state.pro;
+    $("trayNote").textContent = state.pro ? "All 15 styles. Tap a style to put it on the necklace." : "5 styles in the free version, 10 more with Pro. Tap a style to put it on the necklace.";
+    drawSpellings();
+    syncs.forEach((f) => f());
+    const st = styleById(state.style);
+    $("capStyle").textContent = `${st.name} style`;
+    $("capMeta").textContent = `${FINISH_NAMES[state.finish]} · ${state.chain} inch chain`;
+    $("orderText").innerHTML = orderText().join("\n");
+    save();
+    cancelAnimationFrame(pending);
+    pending = requestAnimationFrame(() => { drawStage(); drawTiles(); });
+  }
+  input.addEventListener("input", () => update());
+
+  // Load every calligraphy face for the Arabic range before the first real draw.
+  const sample = "ابتثجحخدذرزسشصضطظعغفقكلمنهويىةءأإآؤئ";
+  update();
+  Promise.allSettled(STYLES.map((st) => document.fonts.load(fontOf(st, 40), sample)))
+    .then(() => document.fonts.ready)
+    .then(() => { $("loading").hidden = true; update(false); });
+  setTimeout(() => { $("loading").hidden = true; }, 6000);
+})();
+</script>
