@@ -42,7 +42,8 @@ Which features are free and which are Pro is set in the `STYLES` list (`pro` fla
 `.github/workflows/pages.yml` publishes `arabic-name-preview.html` as `index.html` on every push to `main`.
 No cost, no server.
 
-1. Push this repo to GitHub (`msrshahrukh100/monabella-jewelry`).
+1. The repo is `msrshahrukh100/monabella-jewelry` (private). Make it public for free Pages:
+   `gh repo edit msrshahrukh100/monabella-jewelry --visibility public --accept-visibility-change-consequences`
 2. Settings > Pages > Source: **GitHub Actions**. The site is then at
    `https://msrshahrukh100.github.io/monabella-jewelry/`.
 3. Subdomain `monabella.scribblewithai.com` (temporary): in Squarespace Domains > scribblewithai.com > DNS,
